@@ -1,5 +1,6 @@
 package com.craftaro.epicspawners.api;
 
+import com.craftaro.epicspawners.api.lootables.LootablesManager;
 import com.craftaro.epicspawners.api.spawners.spawner.SpawnerManager;
 import com.craftaro.epicspawners.api.utils.SpawnerDataBuilder;
 import com.craftaro.epicspawners.api.utils.SpawnerTierBuilder;
@@ -15,8 +16,9 @@ public class EpicSpawnersApi {
     private static SpawnerManager spawnerManager;
     private static SpawnerDataBuilder spawnerDataBuilder;
     private static SpawnerTierBuilder spawnerTierBuilder;
+    public static LootablesManager lootManager;
 
-    public EpicSpawnersApi(Plugin plugin, SpawnerManager spawnerManager, SpawnerDataBuilder spawnerDataBuilder, SpawnerTierBuilder spawnerTierBuilder) {
+    public EpicSpawnersApi(Plugin plugin, SpawnerManager spawnerManager, SpawnerDataBuilder spawnerDataBuilder, SpawnerTierBuilder spawnerTierBuilder, LootablesManager lootablesManager) {
         if (EpicSpawnersApi.plugin != null) {
             throw new IllegalStateException("EpicSpawnersAPI has already been initialized!");
         }
@@ -24,6 +26,7 @@ public class EpicSpawnersApi {
         EpicSpawnersApi.spawnerManager = spawnerManager;
         EpicSpawnersApi.spawnerDataBuilder = spawnerDataBuilder;
         EpicSpawnersApi.spawnerTierBuilder = spawnerTierBuilder;
+        EpicSpawnersApi.lootManager = lootablesManager;
     }
 
     /**
@@ -49,6 +52,10 @@ public class EpicSpawnersApi {
      */
     public static SpawnerTierBuilder getSpawnerTierBuilder(String identifier) {
         return spawnerTierBuilder.newBuilder(identifier);
+    }
+
+    public static LootablesManager getLootManager() {
+        return lootManager;
     }
 
     /**

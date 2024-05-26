@@ -15,6 +15,7 @@ import com.craftaro.epicspawners.api.spawners.spawner.PlacedSpawner;
 import com.craftaro.epicspawners.api.spawners.spawner.SpawnerData;
 import com.craftaro.epicspawners.api.spawners.spawner.SpawnerManager;
 import com.craftaro.epicspawners.api.spawners.spawner.SpawnerStack;
+import com.craftaro.epicspawners.api.lootables.LootablesManager;
 import com.craftaro.epicspawners.blacklist.BlacklistHandler;
 import com.craftaro.epicspawners.boost.BoostManagerImpl;
 import com.craftaro.epicspawners.commands.CommandBoost;
@@ -37,7 +38,6 @@ import com.craftaro.epicspawners.listeners.InteractListeners;
 import com.craftaro.epicspawners.listeners.InventoryListeners;
 import com.craftaro.epicspawners.listeners.SpawnerListeners;
 import com.craftaro.epicspawners.listeners.WorldListeners;
-import com.craftaro.epicspawners.lootables.LootablesManager;
 import com.craftaro.epicspawners.player.PlayerDataManagerImpl;
 import com.craftaro.epicspawners.settings.Settings;
 import com.craftaro.epicspawners.spawners.SpawnManager;
@@ -59,6 +59,7 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.PluginManager;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -70,7 +71,7 @@ public class EpicSpawners extends SongodaPlugin {
     private SpawnerManager spawnerManager;
     private BoostManagerImpl boostManager;
     private CommandManager commandManager;
-    private LootablesManager lootablesManager;
+    private com.craftaro.epicspawners.lootables.LootablesManager lootablesManager;
 
     private BlacklistHandler blacklistHandler;
 
@@ -152,7 +153,7 @@ public class EpicSpawners extends SongodaPlugin {
         this.blacklistHandler = new BlacklistHandler();
         this.playerActionManager = new PlayerDataManagerImpl();
 
-        this.lootablesManager = new LootablesManager();
+        this.lootablesManager = new com.craftaro.epicspawners.lootables.LootablesManager();
         this.lootablesManager.getLootManager().loadLootables();
 
         PluginManager pluginManager = Bukkit.getPluginManager();
@@ -173,10 +174,13 @@ public class EpicSpawners extends SongodaPlugin {
         this.particleTask = SpawnerParticleTask.startTask(this);
         this.spawnerCustomSpawnTask = SpawnerSpawnTask.startTask(this);
         this.appearanceTask = AppearanceTask.startTask(this);
-
+        
+        LootablesManager APILootManager = new LootablesManager(this.lootablesManager.getLootManager(), 
+        		EpicSpawners.getInstance().getDataFolder() + File.separator + "lootables");
+        
         //Note: Next migration revision should be 4. There was a deleted migration with revision 3.
         initDatabase(new _1_InitialMigration(), new _2_AddTiers(), new _3_AddUniqueIndex());
-        new EpicSpawnersApi(this, this.spawnerManager, new SpawnerDataBuilderImpl(""), new SpawnerTierBuilderImpl());
+        new EpicSpawnersApi(this, this.spawnerManager, new SpawnerDataBuilderImpl(""), new SpawnerTierBuilderImpl(), APILootManager);
 
         //Hook into CoreProtect
         if (Bukkit.getPluginManager().isPluginEnabled("CoreProtect")) {
